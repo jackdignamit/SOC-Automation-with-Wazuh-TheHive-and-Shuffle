@@ -18,7 +18,7 @@ description
 | TheHive             | Incident response platform for case tracking | [https://strangebee.com/thehive/](https://strangebee.com/thehive/) |
 | Shuffle             | SOAR platform for automated workflows  | [https://shuffler.io/](https://shuffler.io/) |
 | Sysmon            | Endpoint telemtry for Windows  | [https://shuffler.io/](https://shuffler.io/) |
-| Mimikatz           | Open-source credential-extracting tool used to simulate malicious activity | [https://github.com/ParrotSec/mimikatz](https://github.com/ParrotSec/mimikatz) |
+| Mimikatz           | Open-source credential-extracting tool used to simulate malicious activity | [https://github.com/gentilkiwi/mimikatz](https://github.com/gentilkiwi/mimikatz) |
 | Virtual Machines        | Endpoint environment to run Mimikatz and test Wazuh EDR detection | [https://www.vultr.com/](https://www.vultr.com/) [https://www.virtualbox.org/](https://www.virtualbox.org/) |
 
 - - -
@@ -198,10 +198,10 @@ If you cannot connect to the server, permit its port using **`ufw allow 9000`**.
 - - - 
 
 ## 6️⃣ Configure ossec.conf configuration file
-When the Wazuh agent was installed earlier, it installed an OSSEC-agent directory in your VM's `Program Files (x86)` folder.
-OSSEC agent is a hosted-based intrusion detection system (HIDS) component that runs on endpoints (such as your VM) to monitor and protect that host.
+When the Wazuh service was installed earlier, it installed an OSSEC-agent directory in your VM's `Program Files (x86)` folder.  
+OSSEC agent is a host-based intrusion detection system (HIDS) component that runs on endpoints (such as your VM) to monitor and protect that host.
 
-1. Navigate to your `Program Files (x86)\ossec-agent` directory and open the **ossec.conf** file in notepad.
+1. Navigate to your `Program Files (x86)\ossec-agent` directory on your Virtualbox VM and open the **ossec.conf** file in notepad.
 
 2. Scroll down to the log analysis section and delete the following eventchannel exclusion section:
 
@@ -211,15 +211,38 @@ OSSEC agent is a hosted-based intrusion detection system (HIDS) component that r
 
 <img width="618" height="568" alt="Screenshot 2025-11-01 135615" src="https://github.com/user-attachments/assets/1202b2f6-8f97-45ff-8442-4e671167a7de" />
 
-4. Restart the Wazuh agent service.
+4. Restart the Wazuh agent service. You can confirm that the configuration works as expected by searching for "sysmon" on the Wazuh alerts dashboard:
+
+<img width="1415" height="1163" alt="Screenshot 2025-11-01 135748" src="https://github.com/user-attachments/assets/fed6fc44-5b2d-44b5-9196-fe2324f928ae" />
+
+We configured the Wazuh service on the Virtualbox VM, now we must do the same for the VM hosting our Wazuh dashboard using its SSH session. 
+
+5. Use the command `nano /var/ossec/etc/ossec` to open the **ossec.conf** file on the Wazuh VM. Change the <logall> and <logall_json> values from `no` to `yes`.
+
+*Save the configurations by using CTRL+X, Y, and then enter key.*
+
+<img width="905" height="626" alt="Screenshot 2025-11-01 140951" src="https://github.com/user-attachments/assets/58094ac6-80ed-4c13-93dc-121338480859" />
+
+Now, all detections and events will be logged.
 
 - - - 
 
-## 7️⃣ 
+## 7️⃣ Install Mimikatz on your Virtualbox VM
+Mimikatz is a post-exploitation security tool that demonstrates how credentials can be stolen from a system after an attacker has gained access. 
+It is a form of malware, but since we are using a VM with nothing personable on it, it will just be used to flag our detection rule on Wazuh.
+
+1. Before installing Mimikatz, Windows Defender must be disabled on the VM. You can also create an exclusion rule for either your downloads folder or the entire drive itself.
+
+2. Navigate to this link and download the latest version of Mimikatz onto **YOUR VIRTUAL MACHINE**. **Review Source Code / Download here:** [https://github.com/gentilkiwi/mimikatz](https://github.com/gentilkiwi/mimikatz)
+
+3. Extract the file and open a PowerShell window to execute the file.
+<img width="1012" height="389" alt="Screenshot 2025-11-01 140746" src="https://github.com/user-attachments/assets/f857ba67-cee9-4298-a96e-09e05452de82" />
+
+4. If we search for 'Mimikatz' on the Wazuh dashboard, we should be able to see its execution history.
 
 - - - 
 
-## 8️⃣ Install Mimikatz on your Virtualbox VM
+## 8️⃣ 
 
 - - -
 

@@ -10,7 +10,7 @@ All implementation, exploration, and documentation conducted independently as pa
 - - - 
 
 # Project Overview
-In this project, I created a **fully automated, modern SOC workflow** that is designed to significantly reduce **human error** and **tedious tasks** in security operations. By utilizing open-source tools like **Wazuh (SIEM)**, **Shuffle (SOAR)**, and **TheHive (incident response and case management)**, my workflow detects threats, analyzes them, and informs analysts via emails without any human intervention. 
+In this project, I created a **fully automated, modern SOC workflow** that is designed to significantly reduce **human error** and **tedious tasks** in security operations. By utilizing open-source tools like **Wazuh (SIEM & EDR)**, **Shuffle (SOAR)**, and **TheHive (incident response and case management)**, my workflow detects threats, analyzes them, and informs analysts via emails without any human intervention. 
 
 Cloud-based virtual machines are utilized to host Wazuh and TheHive. A Virtualbox Windows 11 VM is used as a vulnerable endpoint with credential-stealing malware **(Mimikatz)** that notifies Wazuh agents using Sysmon logs. Wazuh's *detect and response* (D&R) rules are flagged and trigger the automated workflow in Shuffle via a webhook. The data is then enriched with threat intelligence using **VirusTotal**, a **SHA256 hash** is captured, emails are sent, and creates a structured incident in TheHive for SOC analysts to investigate.
 

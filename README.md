@@ -1,4 +1,4 @@
-# SOAR Integration Toolkit: Wazuh + Shuffle + TheHive Workflow
+# SOAR Integration Toolkit: Wazuh, Shuffle, & TheHive Workflow
 *Completed: November 1, 2025*
 
 **This project demonstrates a fully integrated security operations center (SOC) automation workflow using Wazuh, TheHive, and Shuffle for *security orchestration, automation, and response* (SOAR). 

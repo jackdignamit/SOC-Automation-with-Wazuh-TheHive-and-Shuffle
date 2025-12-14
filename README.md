@@ -2,7 +2,7 @@
 *Completed: November 1, 2025*
 
 **This project demonstrates a fully integrated security operations center (SOC) automation workflow using Wazuh, TheHive, and Shuffle for *security orchestration, automation, and response* (SOAR). 
-The goal was to build an end‑to‑end incident response pipeline that detects suspicious activity, performs automated triage, provides event data, and inform analysts.**
+The goal was to build an end‑to‑end incident response pipeline that detects suspicious activity, performs automated triage, provides event data, and informs analysts.**
 
 Tutorial by [MyDFIR](https://www.youtube.com/@MyDFIR).  
 All implementation, exploration, and documentation performed independently as part of my cybersecurity learning journey.
@@ -12,7 +12,7 @@ All implementation, exploration, and documentation performed independently as pa
 # Project Overview
 In this project, I created a **fully automated, modern SOC workflow** that is designed to eliminate **human error** and **tedious tasks** in security operations. By utilizing open-source tools like **Wazuh (SIEM)**, **Shuffle (SOAR)**, and **TheHive (incident response and case management)**, my workflow detects threats, analyzes them, and informs analysts via emails without any human intervention. 
 
-Cloud-based virtual machines are utilized to host Wazuh and TheHive. A Virtualbox Windows 10 VM is used as a vulnerable endpoint with credential-stealing malware **(Mimikatz)** that notifies Wazuh agents using Sysmon logs. Wazuh's *detect and response* (D&R) rules are flagged and triggers the automated workflow in Shuffle via a webhook. The data is then enriched with threat intelligence using **VirusTotal**, a **SHA256 hash** is captured, emails are sent, and creates a structured incident in TheHive for SOC analysts to investigate.
+Cloud-based virtual machines are utilized to host Wazuh and TheHive. A Virtualbox Windows 11 VM is used as a vulnerable endpoint with credential-stealing malware **(Mimikatz)** that notifies Wazuh agents using Sysmon logs. Wazuh's *detect and response* (D&R) rules are flagged and trigger the automated workflow in Shuffle via a webhook. The data is then enriched with threat intelligence using **VirusTotal**, a **SHA256 hash** is captured, emails are sent, and creates a structured incident in TheHive for SOC analysts to investigate.
 
 <img width="1228" height="530" alt="Screenshot 2025-11-01 162511" src="https://github.com/user-attachments/assets/dd1c6b16-713b-45cc-83fc-2562a0ef6193" />
 
@@ -22,7 +22,7 @@ Cloud-based virtual machines are utilized to host Wazuh and TheHive. A Virtualbo
 | Wazuh       | SIEM/EDR platform for log collection, monitoring, and alerting | [https://wazuh.com/](https://wazuh.com/) |
 | TheHive             | Incident response platform for case tracking | [https://strangebee.com/thehive/](https://strangebee.com/thehive/) |
 | Shuffle             | SOAR platform for automated workflows  | [https://shuffler.io/](https://shuffler.io/) |
-| Sysmon            | Endpoint telemtry for Windows  | [https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon) |
+| Sysmon            | Endpoint telemetry for Windows  | [https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon) |
 | Mimikatz           | Open-source credential-extracting tool used to simulate malicious activity | [https://github.com/gentilkiwi/mimikatz](https://github.com/gentilkiwi/mimikatz) |
 | MITRE ATT&CK            | Knowledge base of adversary tactics, techniques, and procedures (TTP)  | [https://attack.mitre.org/](https://attack.mitre.org/) |
 | VirusTotal            | Malware analysis and file reputation checker  | [https://www.virustotal.com/gui/](https://www.virustotal.com/gui/) |
@@ -36,13 +36,13 @@ Cloud-based virtual machines are utilized to host Wazuh and TheHive. A Virtualbo
 
 1. **Collect Endpoint Telemetry**   
    A Windows VM with Sysmon installed generates logs for potentially malicious activity.
-   A credential theft tool called Mimikatz is ran, which triggers Wazuh agents on the endpoint to forward the detections to the Wazuh manager.
+   A credential theft tool called Mimikatz is run, which triggers Wazuh agents on the endpoint to forward the detections to the Wazuh manager.
 2. **Detection and Alerting (Wazuh)**  
    Wazuh acts as the central SIEM platform, ingesting logs from the endpoint and matching them to detection rules set to alert suspicious behavior. Alerts are generated when Mimikatz execution rules are flagged.
 3. **Shuffle (SOAR) Orchestration**  
    Wazuh then forwards alerts via a webhook to Shuffle.
    In Shuffle, a workflow parses relevant details such as SHA256 hashes to then be queried using external threat investigation tools such as Virustotal for reputation scoring.
-   Additional workflow steps are conducted like sending email notifications to a SOC team, ensuring analysts are up-to-date and informed to investigate in TheHive.
+   Additional workflow steps are conducted like sending email notifications to a SOC team, ensuring analysts are up to date and able to investigate in TheHive.
 5. **TheHive Case Creation and Management**  
    Shuffle uses TheHive's API to create alerts or cases in TheHive for structured incident tracking. This makes sure that all incidents are cataloged and assigned to analysts for investigations.
 
@@ -59,9 +59,9 @@ For my lab, I used a [Virtualbox](https://www.virtualbox.org/) Windows 11 virtua
 **3.** Add the `**.iso**` file to Virtualbox by navigating to "**New**" at the top of the screen, adding your `.iso` image, setting the version to Windows 11, and using all default settings.  
    - I recommend **8192 MB of base memory**, **2 processors**, and **80 GB** of hard disk storage space but it all depends on your setup.
 
-**4.** Startup your VM and follow the Microsoft setup. When it asks for product key, say you don't have one, and use Windows 11 Pro.  
+**4.** Start up your VM and follow the Microsoft setup. When it asks for product key, say you don't have one, and use Windows 11 Pro.  
 
-**5.** Now let's setup Sysmon which can be installed from here: [https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon)
+**5.** Now let's set up Sysmon which can be installed from here: [https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon](https://learn.microsoft.com/en-us/sysinternals/downloads/sysmon)
 
 *Sysmon is a free tool created by Microsoft that provides detailed information about system activities on Windows by capturing and logging events. For this particular project, it will be used to flag our credential stealer called Mimikatz.*
 
@@ -96,10 +96,10 @@ Let's use a cloud provider called [Vultr](https://www.vultr.com/) to create virt
 ## 3️⃣ Install Wazuh
 Wazuh is an open-source security platform that provides threat detection, monitoring, and incident response all in one platform.
 
-1. Secure Shell connect into the Wazuh virtual machine using its public IP address listed on the Vultr dashboard.
+1. Secure Shell (SSH) connect into the Wazuh virtual machine using its public IP address listed on the Vultr dashboard.
    - `ssh root@[Wazuh public ip]`
 
-2. To install Wazuh, download and run the Wazuh installation assistent. The latest version can be located here: [https://documentation.wazuh.com/current/quickstart.html](https://documentation.wazuh.com/current/quickstart.html)
+2. To install Wazuh, download and run the Wazuh installation assistant. The latest version can be located here: [https://documentation.wazuh.com/current/quickstart.html](https://documentation.wazuh.com/current/quickstart.html)
    - This process may take a couple of minutes.
    
 <img width="1463" height="792" alt="Screenshot 2025-12-07 125015" src="https://github.com/user-attachments/assets/f4036a4c-b8ca-45d7-a817-acafd1a4af0b" />
@@ -121,7 +121,7 @@ On the Wazuh dashboard, we will be creating a new agent to install on our Virtua
 
 1. Open the Wazuh dashboard on your Virtualbox VM. Deploy a new agent and configure it as a Windows agent with the Wazuh public IP address.
 
-2. Open an **administrative powershell window** and paste the commands provided by Wazuh to install the agent. Once entered, run `net start wazuhsvc` to start the Wazuh service.
+2. Open an **administrative PowerShell window** and paste the commands provided by Wazuh to install the agent. Once entered, run `net start wazuhsvc` to start the Wazuh service.
 - If the agent fails to appear on the dashboard, permit its associated ports using `ufw allow 443`, `ufw allow 1514`, and `ufw allow 1515` commands **in the SSH session**.
 
 <img width="955" height="296" alt="Screenshot 2025-12-13 122231" src="https://github.com/user-attachments/assets/26abad7b-164b-425f-ae98-a55d093f6aa2" />
@@ -146,7 +146,7 @@ TheHive is an open-source **Security Orchestration, Automation, and Response (SO
       - `java -version` to verify Java is installed and up to date.
 
 **Cassandra** is the **primary distributed NoSQL database** used by TheHive which stores all cases, alerts, tasks, and permissions.
-**Elasticsearch** is a **search and indexing engine** used by both Cassandra and TheHive as a search accelerator.
+**Elasticsearch** is a **search and indexing engine** used by TheHive as a search accelerator.
 
 4. For Cassandra, we'll have to configured its default settings. Navigate to its configuration file using **`nano /etc/cassandra/cassandra.yaml`** and changing the following values:
   ```
@@ -158,6 +158,8 @@ TheHive is an open-source **Security Orchestration, Automation, and Response (SO
 *Save the configurations by using CTRL+X, Y, and then enter key.*
 
 5. Restart the Cassandra service (systemctl stop/start cassandra.service) and remove all extra files under its directory using **`rm -rf /var/lib/cassandra/*`**
+
+      > Warning: This command deletes all Cassandra data and should only be run during initial setup.
 
 <img width="1047" height="264" alt="Screenshot 2025-12-07 165202" src="https://github.com/user-attachments/assets/446bd4db-fd22-4768-a969-df8d15cc546b" />
 
@@ -209,12 +211,12 @@ If you cannot connect to the server, permit its port using **`ufw allow 9000`**.
 - - - 
 
 ## 6️⃣ Configure ossec.conf configuration file
-When the Wazuh service was installed earlier, it installed an OSSEC-agent directory in your VM's `Program Files (x86)` folder.  
+When the Wazuh agent was installed earlier, it installed an OSSEC-agent directory in your VM's `Program Files (x86)` folder.  
 OSSEC agent is a host-based intrusion detection system (HIDS) component that runs on endpoints (such as your VM) to monitor and protect that host.
 
 1. Navigate to your `Program Files (x86)\ossec-agent` directory on your Virtualbox VM and open the **ossec.conf** file in notepad.
 
-2. Scroll down to the log analysis section and delete the following eventchannel exclusion section:
+2. Scroll down to the log analysis section and delete the following event channel exclusion section:
 
 <img width="639" height="238" alt="Screenshot 2025-12-13 124229" src="https://github.com/user-attachments/assets/82ae42e2-2ebc-4410-9da0-cf8c1505e48f" />
 
@@ -246,7 +248,7 @@ Now, all detections and events will be logged.
 
 ## 7️⃣ Install Mimikatz on your Virtualbox VM
 Mimikatz is a post-exploitation security tool that demonstrates how credentials can be stolen from a system after an attacker has gained access. 
-It is a form of malware, but since we are using a VM with nothing personable on it, it will just be used to flag our detection rule on Wazuh.
+It is a form of malware, but since we are using a VM with nothing personal on it, it will just be used to flag our detection rule on Wazuh.
 
 1. Before installing Mimikatz, Windows Defender must be disabled on the VM. You can also create an exclusion rule for either your downloads folder or the entire drive itself.
 
@@ -266,7 +268,7 @@ Custom rules ensure that alerts are triggered only for relevant, high-value even
 
 1. On the Wazuh dashboard, under the server management tab, click on "rules" and then the custom rules button in the top right.
 
-2. Edit the **local_rules.xml** file and copy the formatting of the rule with an ID of 100001. Use it as a template to create your own Mimikatz detection rule like such:
+2. Edit the **local_rules.xml** file and copy the formatting of the rule with an ID of 100002. Use it as a template to create your own Mimikatz detection rule like such:
 
 <img width="1110" height="806" alt="Screenshot 2025-11-01 142721" src="https://github.com/user-attachments/assets/fc132d95-4d0d-48f3-9f16-8f470935b0f2" />
 
@@ -283,7 +285,7 @@ Custom rules ensure that alerts are triggered only for relevant, high-value even
 - - -
 
 ## 9️⃣ Setup Shuffle
-Shuffle is an open-source security orchestration, automation, and response (SOAR) platform used to help SOC teams automate and coordinate incident responses and manage everyday security tasks. We will utilize it receive alerts from our Wazuh manager, inform analysts and stakeholders, and perform responsive actions.
+Shuffle is an open-source security orchestration, automation, and response (SOAR) platform used to help SOC teams automate and coordinate incident responses and manage everyday security tasks. We will utilize it to receive alerts from our Wazuh manager, inform analysts and stakeholders, and perform responsive actions.
 
 1. To start, create a [Shuffle](https://shuffler.io/) account. Then, create a new workflow.
 
@@ -320,7 +322,7 @@ Shuffle is an open-source security orchestration, automation, and response (SOAR
 <img width="1179" height="492" alt="Screenshot 2025-11-01 152642" src="https://github.com/user-attachments/assets/c5a9a658-113c-4c2e-9084-1de97fd83277" />
 <img width="412" height="1000" alt="Screenshot 2025-11-01 153421" src="https://github.com/user-attachments/assets/107e473e-1030-470b-ad8f-050f1f3d0813" />
 
-### If you rerun Mimikatz, the alert should be funneled into the webhook and into Virustotal and the SHA256 Hasher.
+### If you rerun Mimikatz, the alert should be funneled into the webhook and into VirusTotal and the SHA256 Hasher.
 
 <img width="582" height="436" alt="Screenshot 2025-11-01 152756" src="https://github.com/user-attachments/assets/b8bb3bb0-896b-4a03-a2c3-89e7b46f055a" />
 <img width="560" height="1027" alt="Screenshot 2025-11-01 153520" src="https://github.com/user-attachments/assets/4e07d731-c92a-4284-ac5e-2df2a1b1c240" />
@@ -391,7 +393,7 @@ The last thing to setup for our SOAR workflow is an email notification about Waz
    - Configured detect & response (D&R) rule in Wazuh dashboard to catch malicious process executions (Mimikatz.exe)
 2. **SOAR Workflow Development**
    - Building automated workflows in Shuffle to handle alerts, parse data, integrate APIs, and alerting via emails.
-   - Reduce manual SOC workloads by automating very repetitive tasks
+   - Reduce manual SOC workloads by automating repetitive tasks
    - Configured email notifications from Shuffle for informing Stakeholders or response teams
 3. **API Integration**
    - Using REST APIs for VirusTotal and TheHive incident management and creation
@@ -399,7 +401,7 @@ The last thing to setup for our SOAR workflow is an email notification about Waz
    - Utilizing TheHive for investigations and tracking by properly structuring security incidents
 5. **Endpoint Telemetry Configuration**
    - Utilized two Vultr cloud-based virtual machines to host and configure Wazuh and TheHive.
-   - Hosted a VirtualBox VM as a Windows 10 endpoint
+   - Hosted a VirtualBox VM as a Windows 11 endpoint
    - Installed and configured Sysmon to capture log data
    - Installed and configured Wazuh agents to capture Sysmon log data and funnel it to the Wazuh dashboard
    - Using Mimikatz to simulate malicious behavior on a virtual machine
@@ -409,4 +411,4 @@ The last thing to setup for our SOAR workflow is an email notification about Waz
 # Conclusion
 This project successfully demonstrates how to build a robust, end-to-end incident response workflow using Wazuh, Shuffle, and TheHive. It showcases how to simulate a real-world threat using Mimikatz on a virtual machine, detecting its presence, and funneling security details from Sysmon into a Wazuh agent and then a dashboard. From there, it is enriched by Shuffle's automated response workflow which informs analysts and stakeholders via email about the detection. Lastly, the case is added to TheHive's case management platform which are then acted upon by analysts.
 
-This lab stands out as a learning platform and proof of concept for SIEM, SOAR, and case management. It clearly demonstrates the importance of automation in Cybersecurity due to its acceleration of detection and response times. This increase in efficiency reduces analyst fatigure and improves overall SOC productivity. From configuring endpoints and SIEM rules to designing a SOAR workflow with API connections, it showcases the practical integration challenges and processes needed to build such a system.
+This lab stands out as a learning platform and proof of concept for SIEM, SOAR, and case management. It clearly demonstrates the importance of automation in Cybersecurity due to its acceleration of detection and response times. This increase in efficiency reduces analyst fatigue and improves overall SOC productivity. From configuring endpoints and SIEM rules to designing a SOAR workflow with API connections, it showcases the practical integration challenges and processes needed to build such a system.
